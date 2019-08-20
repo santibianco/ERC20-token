@@ -1,10 +1,10 @@
-const DappToken = artifacts.require("DappToken");
+const MyToken = artifacts.require("MyToken");
 
-contract('DappToken' , (accounts) => {
+contract('MyToken' , (accounts) => {
     var tokenInstance;
 
     it('initializes the contract with the correct vaulues', () => {
-        return DappToken.deployed().then( (instance) => {
+        return MyToken.deployed().then( (instance) => {
             tokenInstance = instance;
             return tokenInstance.name();
         }).then( (name) => {
@@ -19,7 +19,7 @@ contract('DappToken' , (accounts) => {
     });
 
     it('allocates the total supply upon deployment', () => {
-        return DappToken.deployed().then( (instance) => {
+        return MyToken.deployed().then( (instance) => {
             tokenInstance = instance;
             return tokenInstance.totalSupply();
         }).then( (totalSupply) => {
@@ -31,7 +31,7 @@ contract('DappToken' , (accounts) => {
     })
 
     it('transfers token ownership', () =>{
-        return DappToken.deployed().then( (instance) => {
+        return MyToken.deployed().then( (instance) => {
             tokenInstance = instance;
             return tokenInstance.transfer.call(accounts[1], 9999999999999)
         }).then(assert.fail).catch( (error) => {

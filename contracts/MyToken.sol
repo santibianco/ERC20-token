@@ -1,6 +1,6 @@
 pragma solidity >=0.4.21 <0.6.0;
 
-contract DappToken {
+contract MyToken {
     string public name = 'Santi Token';
     string public symbol = 'S22';
     string public standard = 'Santi Token v1.0';
