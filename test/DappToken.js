@@ -35,17 +35,17 @@ contract('MyToken' , (accounts) => {
             tokenInstance = instance;
             return tokenInstance.transfer.call(accounts[1], 9999999999999)
         }).then(assert.fail).catch( (error) => {
-            assert(error.message.indexOf('revert') >= 0, 'triggered require statement');
+            assert(error.message.indexOf('revert') >= 0, 'triggers require statement');
             return tokenInstance.transfer.call(accounts[1], 250000, { from: accounts[0] });
         }).then( (success) => {
             assert.equal(success, true, 'returns boolean true value');    
             return tokenInstance.transfer(accounts[1], 250000, { from: accounts[0] });
         }).then((receipt) => {
-            assert.equal(receipt.logs.length, 1, 'triggers one event')
-            assert.equal(receipt.logs[0].event, 'Transfer', 'the one triggered is the Transfer event')
-            assert.equal(receipt.logs[0].args._from, accounts[0], 'logs the account the tokens are transfered from')
-            assert.equal(receipt.logs[0].args._to, accounts[1], 'logs the account the tokens are transfered to')
-            assert.equal(receipt.logs[0].args._value, 250000, 'logs the transfered amount')
+            assert.equal(receipt.logs.length, 1, 'triggers one event');
+            assert.equal(receipt.logs[0].event, 'Transfer', 'the one triggered is the Transfer event');
+            assert.equal(receipt.logs[0].args._from, accounts[0], 'logs the account the tokens are transfered from');
+            assert.equal(receipt.logs[0].args._to, accounts[1], 'logs the account the tokens are transfered to');
+            assert.equal(receipt.logs[0].args._value, 250000, 'logs the transfered amount');
             return tokenInstance.balanceOf(accounts[1]);
         }).then((balance) => {
             assert.equal(balance.toNumber(),250000, 'adds the amount to the receiving account'); 
@@ -55,7 +55,24 @@ contract('MyToken' , (accounts) => {
         });;
     })
 
-
+    it('approves tokens for delegated transfer', () => {
+        return MyToken.deployed().then( (instance) => {
+            tokenInstance = instance;
+            return tokenInstance.approve.call(accounts[1], 100);
+        }).then( (success) => {
+            assert.equal(success, true, "returns true when success");
+            return tokenInstance.approve(accounts[1], 100);
+        }).then((receipt) => {
+            assert.equal(receipt.logs.length, 1, 'triggers one event');
+            assert.equal(receipt.logs[0].event, 'Approval', 'the one triggered is the Approval event');
+            assert.equal(receipt.logs[0].args._owner, accounts[0], 'logs the account the tokens are authorized by');
+            assert.equal(receipt.logs[0].args._spender, accounts[1], 'logs the account the tokens are authorized to');
+            assert.equal(receipt.logs[0].args._value, 100, 'logs the transfered amount');
+            return tokenInstance.allowance(accounts[0], accounts[1]);
+        }).then( (allowance) => {
+            assert.equal(allowance, 100, 'stores the allowance for delegated transfer');
+        });
+    });
 
 
 
