@@ -43,4 +43,17 @@ contract MyToken {
         return true;
     }
 
+    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success){
+        require(_value <= balanceOf[_from], 'Not enough tokens in _from account');
+        require(_value <= allowance[_from][msg.sender], 'Not enough tokens approved to _from account');
+
+        balanceOf[_from] -= _value;
+        balanceOf[_to] += _value;
+        allowance[_from][msg.sender] -= _value;
+
+        emit Transfer(_from, _to, _value);
+
+        return true;
+    }
+
 }
