@@ -1,6 +1,13 @@
 pragma solidity >=0.4.21 <0.6.0;
 
+import './SafeMath.sol';
+
 contract MyToken {
+
+    // using Openzeppelin SafeMath in token transactions
+    using SafeMath for uint256;
+
+
     string public name = 'Santi Token';
     string public symbol = 'S22';
     string public standard = 'Santi Token v1.0';
@@ -31,8 +38,8 @@ contract MyToken {
 
     function transfer(address _to, uint256 _value) public returns (bool success){
         require(balanceOf[msg.sender] >= _value, 'Not enough tokens');
-        balanceOf[msg.sender] -= _value;
-        balanceOf[_to] += _value;
+        balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
+        balanceOf[_to] = balanceOf[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
         return true;
     }
@@ -47,9 +54,9 @@ contract MyToken {
         require(_value <= balanceOf[_from], 'Not enough tokens in _from account');
         require(_value <= allowance[_from][msg.sender], 'Not enough tokens approved to _from account');
 
-        balanceOf[_from] -= _value;
-        balanceOf[_to] += _value;
-        allowance[_from][msg.sender] -= _value;
+        balanceOf[_from] = balanceOf[_from].sub(_value);
+        balanceOf[_to] = balanceOf[_to].add(_value);
+        allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
 
         emit Transfer(_from, _to, _value);
 
