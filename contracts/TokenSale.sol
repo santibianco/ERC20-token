@@ -6,7 +6,7 @@ contract TokenSale {
 
   using SafeMath for uint256;
 
-  address admin;
+  address payable owner;
   MyToken public tokenContract;
   uint256 public tokenPrice;
   uint256 public tokensSold;
@@ -17,7 +17,7 @@ contract TokenSale {
   );
 
   constructor(MyToken _tokenContract, uint256 _tokenPrice) public {
-    admin = msg.sender;
+    owner = msg.sender;
     tokenContract = _tokenContract;
     tokenPrice = _tokenPrice;
   }
@@ -28,6 +28,12 @@ contract TokenSale {
     require(tokenContract.transfer(msg.sender, _numberOfTokens), 'transfer failed');
     tokensSold = tokensSold.add(_numberOfTokens);
     emit Sell(msg.sender, _numberOfTokens);
+  }
+
+  function endSale() public {
+    require(msg.sender == owner, 'Only owner can end the sale');
+    require(tokenContract.transfer(owner, tokenContract.balanceOf(address(this))), 'transfer failed');
+    owner.transfer(address(this).balance);
   }
 
 }

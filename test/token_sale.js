@@ -6,7 +6,7 @@ contract('TokenSale', function(accounts) {
   let tokenSaleInstance;
   let tokenInstance;
   const buyer = accounts[1];
-  const admin = accounts[0]
+  const owner = accounts[0]
   const tokensAvailable = 750000;
   const tokenPrice = 1000000000000000; //wei
   const numberOfTokens = 10;
@@ -32,7 +32,7 @@ contract('TokenSale', function(accounts) {
       return TokenSale.deployed();
     }).then( (instance) => {
       tokenSaleInstance = instance;
-      return tokenInstance.transfer(tokenSaleInstance.address, tokensAvailable, {from: admin});
+      return tokenInstance.transfer(tokenSaleInstance.address, tokensAvailable, {from: owner});
     }).then( (recepit) => {  
       return tokenSaleInstance.buyTokens(numberOfTokens, {from: buyer, value: numberOfTokens * tokenPrice})  
     }).then( (receipt) => {
@@ -55,6 +55,31 @@ contract('TokenSale', function(accounts) {
       return tokenSaleInstance.buyTokens.call(tokensAvailable + 1, {from: buyer, value: numberOfTokens * tokenPrice});
     }).then(assert.fail).catch( (error) => {
       assert(error.message.indexOf('revert') >= 0, 'avoids buying more tokens than available');
+    });
+  });
+
+  it('ends token sale', function() {
+    return MyToken.deployed().then(function(instance) {
+      // Grab token instance first
+      tokenInstance = instance;
+      return TokenSale.deployed();
+    }).then( (instance) => {
+      // Then grab token sale instance
+      tokenSaleInstance = instance;
+      // Try to end sale from account other than the owner
+      return tokenSaleInstance.endSale({ from: buyer });
+    }).then(assert.fail).catch( (error) => {
+      assert(error.message.indexOf('revert' >= 0, 'avoids ending sale without being the owner'));
+      // End sale as owner
+      return tokenSaleInstance.endSale({ from: owner });
+    }).then( () => {
+      return tokenInstance.balanceOf(owner);
+    }).then( (balance) => {
+      assert.equal(balance, 999990, 'returns all unsold dapp tokens to owner');
+      // Check that the contract has no balance
+      return web3.eth.getBalance(tokenSaleInstance.address);
+    }).then( (balance) => {
+      assert.equal(balance, 0, 'extracts remaining ether from contract');
     });
   });
 
