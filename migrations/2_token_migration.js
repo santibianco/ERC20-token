@@ -6,5 +6,4 @@ module.exports = async (deployer, network, accounts) => {
   tokenInstance = await MyToken.deployed();
   const tokenPrice = 1000000000000000; //wei
   await deployer.deploy(TokenSale, MyToken.address, tokenPrice);
-  tokenInstance.transfer(TokenSale.address, 750000, {from: accounts[0]})
 };
