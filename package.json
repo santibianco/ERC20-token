@@ -14,7 +14,9 @@
   "devDependencies": {
     "lite-server": "^2.5.4"
   },
-  "dependencies": {},
+  "dependencies": {
+    "truffle-hdwallet-provider": "^1.0.17"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/santibianco/ERC20-token.git"
